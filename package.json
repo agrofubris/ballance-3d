@@ -1,0 +1,43 @@
+{
+  "name": "ballance",
+  "private": true,
+  "license": "MIT",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "app": "npm run build && electron .",
+    "build": "tsc -b && vite build",
+    "build:rapier": "tsc -b && vite build --mode rapier",
+    "leia:build": "node tools/leia-presenter/build.mjs",
+    "package:tester": "node scripts/package-tester.mjs",
+    "check:hygiene": "node scripts/check-repo-hygiene.mjs",
+    "lint": "oxlint",
+    "preview": "npm run build && vite preview",
+    "deploy": "npm run build && node scripts/stage-original-assets.mjs && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "harness": "node scripts/harness.ts",
+    "test": "node scripts/test-suite.mjs",
+    "test:local": "node scripts/test-suite.mjs --require-local"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.20.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.54.4",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@types/three": "^0.185.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "electron": "39.8.10",
+    "oxlint": "^1.79.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2",
+    "wrangler": "^4.129.0"
+  }
+}

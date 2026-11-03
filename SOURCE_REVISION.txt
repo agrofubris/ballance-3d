@@ -1,0 +1,2 @@
+Ballance 3D Stereo source snapshot
+Commit: $Format:%H$

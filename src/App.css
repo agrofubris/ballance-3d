@@ -1,0 +1,101 @@
+.original-app {
+  width: 100%;
+  height: 100dvh;
+  min-height: 240px;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  isolation: isolate;
+  user-select: none;
+  color: #f5eedc;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+.game-canvas,
+.original-menu-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.game-canvas canvas,
+.original-menu-scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.original-menu-scene {
+  z-index: 1;
+  background: #746756;
+}
+.original-menu{position:absolute;inset:0;z-index:3;container-type:size;overflow:hidden;outline:none}
+.art-stage{--k:calc(min(75cqw,100cqh) / 480);position:absolute;inset:0;margin:auto;height:min(100cqh,75cqw);width:min(100cqw,133.3333cqh)}
+.art-sprite,.art-button{position:absolute;box-sizing:border-box}.art-material{position:absolute;inset:0;pointer-events:none;image-rendering:auto}
+.art-button{padding:0;margin:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}.art-button:focus-visible{outline:none}.art-button:disabled{cursor:default}
+.art-text{position:absolute;inset:0;display:flex;flex-direction:column;pointer-events:none;overflow:visible}.art-text-block{position:relative;flex:none}.art-text-shadow,.art-text-ink{position:absolute;inset:0;display:flex;flex-direction:column}
+.art-line{position:relative;flex:none}.art-glyph{position:absolute;top:0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.art-input{position:absolute;opacity:0;border:0;padding:0;margin:0;background:none;color:transparent;caret-color:transparent;outline:none}
+.stereo-menu-stage{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}.stereo-menu-stage .stereo-eye{pointer-events:none}.stereo-menu-stage .stereo-eye-left{pointer-events:none}.stereo-menu-stage .original-menu{scrollbar-width:none;-ms-overflow-style:none}.stereo-menu-stage .original-menu::-webkit-scrollbar{display:none}.stereo-menu-stage[data-mode=sbs] .stereo-eye,.stereo-menu-stage[data-mode=crossview] .stereo-eye,.stereo-menu-stage[data-mode=sbs-full] .stereo-eye{width:100%;right:auto;transform:scaleX(.5) translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)));transform-origin:left center}.stereo-menu-stage[data-mode=sbs] .stereo-eye-left,.stereo-menu-stage[data-mode=sbs-full] .stereo-eye-left{--stereo-eye-sign:1;left:0}.stereo-menu-stage[data-mode=sbs] .stereo-eye-right,.stereo-menu-stage[data-mode=sbs-full] .stereo-eye-right{--stereo-eye-sign:-1;left:50%}.stereo-menu-stage[data-mode=crossview] .stereo-eye-left{--stereo-eye-sign:1;left:50%}.stereo-menu-stage[data-mode=crossview] .stereo-eye-right{--stereo-eye-sign:-1;left:0}.stereo-menu-stage[data-mode=tab] .stereo-eye,.stereo-menu-stage[data-mode=tab-full] .stereo-eye{height:100%;bottom:auto;transform:scaleY(.5) translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)));transform-origin:center top}.stereo-menu-stage[data-mode=tab] .stereo-eye-left,.stereo-menu-stage[data-mode=tab-full] .stereo-eye-left{--stereo-eye-sign:1;top:0}.stereo-menu-stage[data-mode=tab] .stereo-eye-right,.stereo-menu-stage[data-mode=tab-full] .stereo-eye-right{--stereo-eye-sign:-1;top:50%}.stereo-menu-stage[data-mode=interlaced] .stereo-eye-left,.stereo-menu-stage[data-mode=interlaced-reversed] .stereo-eye-right{-webkit-mask-image:repeating-linear-gradient(to bottom,#000 0 var(--stereo-row-height),transparent var(--stereo-row-height) calc(var(--stereo-row-height) * 2));mask-image:repeating-linear-gradient(to bottom,#000 0 var(--stereo-row-height),transparent var(--stereo-row-height) calc(var(--stereo-row-height) * 2))}.stereo-menu-stage[data-mode=interlaced] .stereo-eye-right,.stereo-menu-stage[data-mode=interlaced-reversed] .stereo-eye-left{-webkit-mask-image:repeating-linear-gradient(to bottom,transparent 0 var(--stereo-row-height),#000 var(--stereo-row-height) calc(var(--stereo-row-height) * 2));mask-image:repeating-linear-gradient(to bottom,transparent 0 var(--stereo-row-height),#000 var(--stereo-row-height) calc(var(--stereo-row-height) * 2))}
+.stereo-menu-stage[data-mode=interlaced] .stereo-eye,.stereo-menu-stage[data-mode=interlaced-reversed] .stereo-eye{transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)))}.stereo-menu-stage[data-mode=interlaced] .stereo-eye-left,.stereo-menu-stage[data-mode=interlaced-reversed] .stereo-eye-left{--stereo-eye-sign:1}.stereo-menu-stage[data-mode=interlaced] .stereo-eye-right,.stereo-menu-stage[data-mode=interlaced-reversed] .stereo-eye-right{--stereo-eye-sign:-1}
+.stereo-menu-stage[data-mode=leia-sr] .stereo-eye{width:50%;right:auto;transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)));transform-origin:left center}.stereo-menu-stage[data-mode=leia-sr] .stereo-eye-left{--stereo-eye-sign:1;left:0}.stereo-menu-stage[data-mode=leia-sr] .stereo-eye-right{--stereo-eye-sign:-1;left:50%}
+.menu-stereo-stage[data-mode=sbs] .stereo-eye,.menu-stereo-stage[data-mode=crossview] .stereo-eye,.menu-stereo-stage[data-mode=sbs-full] .stereo-eye{transform:scaleX(.5)}.menu-stereo-stage[data-mode=sbs] .stereo-eye .art-stage,.menu-stereo-stage[data-mode=crossview] .stereo-eye .art-stage,.menu-stereo-stage[data-mode=sbs-full] .stereo-eye .art-stage{transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)))}.menu-stereo-stage[data-mode=tab] .stereo-eye,.menu-stereo-stage[data-mode=tab-full] .stereo-eye{transform:scaleY(.5)}.menu-stereo-stage[data-mode=tab] .stereo-eye .art-stage,.menu-stereo-stage[data-mode=tab-full] .stereo-eye .art-stage{transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)))}.menu-stereo-stage[data-mode=interlaced] .stereo-eye,.menu-stereo-stage[data-mode=interlaced-reversed] .stereo-eye{transform:none}.menu-stereo-stage[data-mode=interlaced] .stereo-eye .art-stage,.menu-stereo-stage[data-mode=interlaced-reversed] .stereo-eye .art-stage{transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)))}
+.menu-stereo-stage[data-mode=leia-sr] .stereo-eye{transform:none}.menu-stereo-stage[data-mode=leia-sr] .stereo-eye .art-stage{transform:translateX(calc(var(--stereo-eye-shift,0px) * var(--stereo-eye-sign,0)))}
+.original-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: #16140ec9;
+}
+
+.loading-track {
+  position: relative;
+  width: min(260px, 65vw);
+  height: 12px;
+  border: 2px ridge #ac9562;
+  background: #151914;
+  overflow: hidden;
+}
+
+.loading-track span {
+  display: block;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(#e9cc83, #a8742c);
+  animation: original-load 1.2s ease-in-out infinite alternate;
+}
+
+.original-error {
+  position: absolute;
+  inset: 20%;
+  z-index: 10;
+  background: #171717f2;
+  color: #eee;
+  display: grid;
+  place-content: center;
+  gap: 20px;
+  padding: 30px;
+  text-align: center;
+}
+
+.original-error button {
+  color: #eee;
+  padding: 12px;
+  border: 1px solid #aaa;
+}
+
+@keyframes original-load {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+.original-tutorial{position:absolute;inset:0;z-index:4;pointer-events:none;color:#fff;font-family:'Trebuchet MS',Arial,sans-serif}.tutorial-stage{z-index:4}
+@keyframes art-caret-blink{50%{opacity:0}}@media(prefers-reduced-motion:reduce){.loading-track span{animation:none;width:100%}}
+
+.original-hud{position:absolute;inset:0;z-index:2;pointer-events:none;container-type:size}.hud-left{margin:auto auto auto 0}.hud-right{margin:auto 0 auto auto}.hud-points-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.original-tutorial{container-type:size}
+/* UI Depth pop-out: the left-eye view's overlay moves right and the right-eye view's moves left in every mode (the scene's near objects do the same); crossview only swaps which half shows which eye. */
+.original-app.stereo-pointer,.original-app.stereo-pointer *{cursor:none}.art-cursor{position:absolute;z-index:100;pointer-events:none;user-select:none}

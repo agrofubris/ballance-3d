@@ -1,0 +1,77 @@
+BALLANCE 3D STEREO - HOW TO PLAY
+===============================
+
+This folder is the game source. It contains NO Ballance levels,
+textures, sounds, installer, or ISO. You add those yourself from
+your own copy. Everything the wizard downloads or builds stays
+inside this folder. Nothing is installed on your system.
+
+YOU NEED
+--------
+- Windows 10/11.
+- Your own legally bought Ballance. The wizard reads an installed folder
+  (for example C:\Games\Ballance). If you only have an ISO, install from
+  it first; the wizard cannot read or mount an ISO by itself.
+- Internet for the one-time download. Nothing else to install.
+
+PLAY IN 3 STEPS
+---------------
+1. Copy this folder somewhere writable, for example:
+   C:\Games\Ballance-3D-source
+
+2. Double-click Setup-Ballance.bat.
+   - Press Y to accept the open-source licenses.
+   - When asked, type your Ballance folder and press Enter.
+   - Wait. It downloads its own Node/Python/FFmpeg (each archive is
+     checked with SHA-256), converts your levels, and opens the game.
+     Say N to the optional exact-physics question unless you want a
+     10-20 minute build.
+
+3. Play at http://127.0.0.1:5173/ in your browser.
+   Next time, just double-click Launch-Ballance.bat.
+
+TOOL DOWNLOADS AND CHECKSUMS
+----------------------------
+Every downloaded tool archive is checked with SHA-256 before it is
+extracted; a mismatch deletes the file and stops the wizard.
+- Node, CMake, FFmpeg, LLVM: digests published or signed by their
+  providers (nodejs.org SHASUMS256, Kitware's SHA-256 file, gyan.dev's
+  .sha256 sidecar, LLVM's signed provenance digest).
+- Python and MinGit: exact versioned immutable HTTPS URLs with SHA-256
+  content pins committed by this project (not vendor-published digests).
+The Emscripten toolchain installed later by `emsdk install 6.0.2` stays
+inside emsdk's own package-management trust boundary; this project does
+not independently hash-pin those artifacts.
+
+CONTROLS
+--------
+- Arrow keys: roll. Shift + left/right: turn camera.
+  Space: raise camera. Escape: pause.
+- Gamepad works. Change buttons in Options -> Controls.
+- 3D glasses TV? See Options -> 3D Stereo.
+
+LEGAL - PLEASE READ
+-------------------
+- Ballance was made by Cyparade and published by Atari.
+- Original Ballance content is NOT included and has its own rights.
+  Each player must use their own legally acquired copy. Do not share
+  your ISO, installer, Player.exe, converted levels, textures, or sounds.
+- The IVP physics SDK is supplied separately and has its own license.
+  Do not share the built ivp-simulation files unless that license allows it.
+- The built-in converter in vendor/bmap-win-x64 is from MIT-licensed
+  LibCmo21 plus YYCCommonplace, stb, and zlib. See THIRD_PARTY.md.
+  It IS allowed to stay in this folder when you share it.
+- See README.md, THIRD_PARTY.md, docs/original-import.md and
+  docs/original-ivp-wasm.md before sharing anything beyond this source.
+
+SHARING THIS FOLDER
+-------------------
+Safe to share: this source tree including vendor/bmap-win-x64.
+NEVER add: .local, node_modules, dist, .wrangler, ISO, installer,
+EXE, original DLL, WASM, NMO/CMO, original textures or audio.
+The small SVG icons in public/ are ours, not Ballance content.
+
+ADVANCED ONLY
+-------------
+Manual conversion and exact-physics build are in docs/original-import.md
+and docs/original-ivp-wasm.md. You will not need them to play.

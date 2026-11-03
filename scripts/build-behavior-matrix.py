@@ -1,0 +1,126 @@
+﻿#!/usr/bin/env python3
+"""Build a behavior inventory matrix from the supplied original NMO/CMO dumps.
+
+This is an inventory, not an interpreter. It counts the named CKBehavior
+objects stored in every dumped file so unported generic behavior names can be
+prioritized by how widely they are used.
+"""
+import argparse
+import json
+import re
+import subprocess
+from collections import Counter, defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+parser = argparse.ArgumentParser()
+parser.add_argument('dumps', type=Path)
+parser.add_argument('--json', type=Path, default=Path('.local/reference/behavior-matrix.json'))
+parser.add_argument('--markdown', type=Path, default=Path('.local/reference/behavior-matrix.md'))
+args = parser.parse_args()
+
+MODULE = re.compile(r'^(P_Modul_\d+|P_Extra_(?:Point|Life)|PE_Balloon|PC_TwoFlames|PS_FourFlames|P_Ball_(?:Paper|Stone|Wood)|P_Box|P_Dome)$')
+
+def category(path: Path) -> str:
+    stem = path.stem
+    if re.fullmatch(r'Level_\d+', stem, re.I): return 'Level'
+    if stem.lower() in {'balls', 'gameplay', 'levelinit', 'base', 'menu', 'menulevel'}: return 'Shared'
+    match = MODULE.match(stem)
+    return match.group(1) if match else 'Other'
+
+files = {}
+aggregate = Counter()
+present = defaultdict(set)
+for path in sorted(args.dumps.glob('*.tsv')):
+    raw = path.read_bytes()
+    if raw.startswith(b'\xff\xfe'): text = raw.decode('utf-16-le')
+    elif raw.startswith(b'\xfe\xff'): text = raw.decode('utf-16-be')
+    else: text = raw.decode('utf-8', errors='replace')
+    rows = []
+    counts = Counter()
+    for line in text.splitlines():
+        parts = line.split('\t')
+        if len(parts) != 5: continue
+        kind, name = int(parts[2]), parts[3]
+        if kind == 8 and name:
+            counts[name] += 1
+            aggregate[name] += 1
+            present[name].add(path.stem)
+        rows.append((kind, name))
+    files[path.stem] = {'category': category(path), 'behaviors': dict(sorted(counts.items())), 'rows': len(rows)}
+
+# The runtime registry is authoritative: every name it exports is implemented.
+# This static set is only a fallback for a checkout without a usable Node
+# toolchain, so the generator never silently guesses when Node can run.
+FALLBACK_KNOWN = {
+    'TT Set Dynamic Position', 'Timer', 'Bezier Progression', 'TT SpeedOMeter',
+    'TT Scaleable Proximity', 'Get Nearest In Group', 'TT ProximityVolumeControl',
+    'SphericalParticleSystem', 'TT_TimedependentPointParticlesystem',
+    'TT WaveParticleSystem', 'Set Texture', 'Parameter Selector', 'Sequencer',
+    'PhysicsForce', 'PhysicsImpulse', 'PhysicsHinge', 'PhysicsSlider',
+    'PhysicsBallSocket', 'PhysicsWakeUp', 'PhysicsPhysicalize', 'PhysicsUnphysicalize',
+    'Test', 'Delayer', 'TimerMini', 'Activate Script', 'Show', 'Hide', 'Scale',
+    'Rotate', 'Wave Player', 'Light Anim', 'Rotate Lighting Sphere',
+    'Scale Lighting Sphere', 'Set Light Color', 'Set Physics Force',
+    'Set Dynamic Position', 'Per Second',
+    'Binary Switch', 'Identity', 'Group Iterator', 'Linear Progression', 'Nop',
+    'Binary Memory', 'Switch On Parameter', 'Wait For All', 'Deactivate Script',
+    'Interpolator', 'Key Event', 'Set Position', 'Get Cell', 'Set Cell',
+    'Send Message', 'Op', 'Wait Message',
+    # Physics set (physics_RT.dll) and recovered effect/audio behaviors.
+    'Physicalize', 'Unphysicalize', 'SetPhysicsForce', 'Set Physics Force',
+    'PhysicsImpulse', 'Physics Impulse', 'Set Physics Hinge',
+    'Set Physics Slider', 'Set Physics BallSocket', 'Physics WakeUp',
+    'PhysicsCollDetection', 'TT Set Dynamic Position', 'Set Dynamic Position',
+    'Timer', 'Bezier Progression', 'Exit', 'Set World Matrix', 'Set Diffuse',
+    'Set Texture', 'Play Sound Instance', 'Point Particle System',
+    'TT Restore IC', 'Restore IC',
+}
+
+
+def runtime_known():
+    command = [
+        'node', '-e',
+        "import('./src/game/original-graph.ts').then(module => "
+        "console.log(Object.keys(module.ORIGINAL_BEHAVIORS).join('\\n')))",
+    ]
+    try:
+        result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
+    except (OSError, subprocess.CalledProcessError) as error:
+        print(f'warning: cannot read ORIGINAL_BEHAVIORS ({error}); using the static fallback')
+        return FALLBACK_KNOWN
+    known = {line.strip() for line in result.stdout.splitlines() if line.strip()}
+    if not known:
+        raise RuntimeError('ORIGINAL_BEHAVIORS is empty')
+    return known
+
+
+KNOWN = runtime_known()
+
+matrix = {
+    name: {'instances': count, 'files': sorted(present[name]), 'known': name in KNOWN}
+    for name, count in aggregate.most_common()
+}
+args.json.parent.mkdir(parents=True, exist_ok=True)
+args.markdown.parent.mkdir(parents=True, exist_ok=True)
+args.json.write_text(json.dumps({'source': 'dumped NMO/CMO CHNK behaviors', 'files': files, 'behaviors': matrix}, indent=2) + '\n')
+
+lines = ['# Original behavior inventory', '',
+         'Generated by `scripts/build-behavior-matrix.py` from the supplied NMO/CMO',
+         'chunk dumps. Counts are named CKBehavior objects; duplicate names include',
+         'both prototypes and instances, so this is a prioritization matrix rather',
+         'than an execution graph. `Known` means a generic behavior has a recovered',
+         'DLL/module implementation or oracle in the port; the level-specific graph',
+         'wiring still needs per-instance verification.', '',
+         '| Behavior | Instances | Files | Known |', '| --- | ---: | --- | :---: |']
+for name, item in matrix.items():
+    files_label = ', '.join(item['files'])
+    lines.append(f"| `{name}` | {item['instances']} | {files_label} | {'yes' if item['known'] else ''} |")
+lines += ['', '## Files', '', '| File | Category | Behavior objects | Rows |', '| --- | --- | ---: | ---: |']
+for name, item in files.items():
+    lines.append(f"| `{name}` | {item['category']} | {sum(item['behaviors'].values())} | {item['rows']} |")
+args.markdown.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+print(f'Wrote {args.json} and {args.markdown}')
+print(f'{len(matrix)} distinct behavior names, {sum(aggregate.values())} behavior objects')
+

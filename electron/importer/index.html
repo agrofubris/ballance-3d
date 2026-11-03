@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ballance setup</title>
+  <link rel="stylesheet" href="importer.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Ballance</h1>
+      <p>Import the game from your own installed copy. The converter builds a local
+        asset pack for this app; no files are uploaded.</p>
+    </header>
+
+    <section id="setup">
+      <label for="game-folder">Game folder</label>
+      <div class="row">
+        <input id="game-folder" readonly placeholder="No Ballance installation detected">
+        <button id="choose-game" type="button">Choose game folder</button>
+      </div>
+      <p id="game-status" class="status" role="status"></p>
+      <div class="actions">
+        <button id="import" class="primary" type="button" disabled>Import</button>
+      </div>
+    </section>
+
+    <section id="progress" hidden aria-live="polite">
+      <p id="step-name">Starting the import...</p>
+      <div id="bar" class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="bar-fill"></div>
+      </div>
+      <p id="progress-detail" class="status"></p>
+      <div class="actions">
+        <button id="cancel" type="button">Cancel</button>
+      </div>
+    </section>
+
+    <section id="failure" hidden aria-live="assertive">
+      <p id="failure-message" class="error"></p>
+      <pre id="log" tabindex="0"></pre>
+      <div class="actions">
+        <button id="retry" type="button">Try again</button>
+      </div>
+    </section>
+
+    <footer>
+      <button id="existing" class="link" type="button">Use an existing prepared pack</button>
+      <p class="hint">A prepared pack is the folder produced by
+        <code>scripts/prepare-original.py</code>; it contains <code>data-arrays.json</code>.</p>
+    </footer>
+  </main>
+  <script src="importer.js"></script>
+</body>
+</html>

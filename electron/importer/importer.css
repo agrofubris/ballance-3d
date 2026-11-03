@@ -1,0 +1,179 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #17191c;
+  color: #e7e9ec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 30px 34px 26px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+header p,
+.hint,
+.status {
+  margin: 0;
+  color: #a9b0ba;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  color: #c8cdd4;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #333943;
+  border-radius: 6px;
+  background: #1e2126;
+  color: #e7e9ec;
+  font: inherit;
+  font-size: 13px;
+}
+
+input::placeholder {
+  color: #6f7781;
+}
+
+button {
+  padding: 9px 16px;
+  border: 1px solid #3a414c;
+  border-radius: 6px;
+  background: #262b32;
+  color: #e7e9ec;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #2f353e;
+}
+
+button:disabled {
+  color: #767d87;
+  cursor: default;
+}
+
+button.primary {
+  border-color: #55743e;
+  background: #3f5b2e;
+}
+
+button.primary:hover:not(:disabled) {
+  background: #4a6937;
+}
+
+button.link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #9fc37b;
+  text-decoration: underline;
+}
+
+button.link:hover:not(:disabled) {
+  background: none;
+  color: #b8d79a;
+}
+
+.status.ok {
+  color: #9fc37b;
+}
+
+.status.warn,
+.error {
+  color: #e3a36b;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #262b32;
+}
+
+#bar-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 5px;
+  background: #6f9b4c;
+  transition: width 160ms ease;
+}
+
+pre {
+  max-height: 210px;
+  margin: 0;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid #333943;
+  border-radius: 6px;
+  background: #101215;
+  color: #c8cdd4;
+  font: 12px/1.45 Consolas, "Cascadia Mono", monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 1px solid #2a2f36;
+}
+
+code {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #242931;
+  font: 12px Consolas, "Cascadia Mono", monospace;
+}
+
+[hidden] {
+  display: none !important;
+}
