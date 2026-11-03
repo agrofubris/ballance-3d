@@ -25,6 +25,24 @@ export const ORIGINAL_SESSION_DOCUMENTS = [
   'P_Ball_Stone', 'P_Ball_Wood', 'P_Box', 'P_Dome', 'Tutorial',
 ] as const
 
+/** The moving-part modules the later levels place (Level 1 uses only P_Modul_01 and P_Modul_34). */
+export const ORIGINAL_MODULE_DOCUMENTS = [
+  'P_Modul_03', 'P_Modul_08', 'P_Modul_17', 'P_Modul_18', 'P_Modul_19', 'P_Modul_25',
+  'P_Modul_26', 'P_Modul_29', 'P_Modul_30', 'P_Modul_37', 'P_Modul_41', 'P_Trafo_Paper',
+] as const
+
+/**
+ * Every document a full game can load: the session set, all twelve levels and
+ * every module. Load Level reads its document synchronously, so the game
+ * prefetches them all; the original loaded each level file behind its loading
+ * screen instead.
+ */
+export const ORIGINAL_GAME_DOCUMENTS: readonly string[] = [...new Set([
+  ...ORIGINAL_SESSION_DOCUMENTS,
+  ...Array.from({ length: 12 }, (_, index) => `Level_${String(index + 1).padStart(2, '0')}`),
+  ...ORIGINAL_MODULE_DOCUMENTS,
+])]
+
 /** The authored `GameSettings` `Tutorial?` default; the original never rewrites it. */
 export function originalTutorialDefault(): boolean {
   const array = originalDataArray('GameSettings')

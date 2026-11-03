@@ -12,6 +12,7 @@ import type { OriginalSessionSimulation } from '../game/original-session.ts'
 import {
   createOriginalSession,
   loadOriginalInstall,
+  ORIGINAL_MODULE_DOCUMENTS,
   ORIGINAL_SESSION_DOCUMENTS,
   type OriginalInstall,
   type OriginalSessionCreated,
@@ -110,14 +111,9 @@ const LEFT_KEY = 203
 const RIGHT_KEY = 205
 
 /** Documents Levelinit may Object Load besides the menu, characters and balls. */
-const MODULE_DOCUMENTS = [
-  'P_Modul_03', 'P_Modul_08', 'P_Modul_17', 'P_Modul_18', 'P_Modul_19', 'P_Modul_25',
-  'P_Modul_26', 'P_Modul_29', 'P_Modul_30', 'P_Modul_37', 'P_Modul_41', 'P_Trafo_Paper',
-]
-
 function prefetchDocuments(level: number): string[] {
   const base = ORIGINAL_SESSION_DOCUMENTS.filter(document => !/^Level_/i.test(document))
-  return [...new Set([...base, `Level_${String(level + 1).padStart(2, '0')}`, ...MODULE_DOCUMENTS])]
+  return [...new Set([...base, `Level_${String(level + 1).padStart(2, '0')}`, ...ORIGINAL_MODULE_DOCUMENTS])]
 }
 
 const SILENT_AUDIO: GraphAudioBinding = {

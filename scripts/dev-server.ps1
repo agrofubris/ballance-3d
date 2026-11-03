@@ -17,7 +17,10 @@ function Get-ServerProcess {
   $saved = Get-Content -LiteralPath $pidFile -ErrorAction SilentlyContinue | Select-Object -First 1
   $serverPid = 0
   if (![int]::TryParse($saved, [ref]$serverPid)) { return $null }
-  return Get-Process -Id $serverPid -ErrorAction SilentlyContinue
+  # Windows reuses process ids: a stale file may name an unrelated process.
+  $process = Get-Process -Id $serverPid -ErrorAction SilentlyContinue
+  if ($process -and $process.ProcessName -ne 'node') { return $null }
+  return $process
 }
 
 function Test-Url {

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] - 2026-11-03
+
+### Fixed
+- Levels 2-12 failed to start ("Document Level_08 was not prefetched"), including after
+  finishing Level 1: the game loaded only Level 1's documents. It now loads every level
+  and module.
+- A level whose first sector has an extra-point ball failed to draw its particles.
+
 ## [1.0.0] - 2026-11-03
 
 First public release.

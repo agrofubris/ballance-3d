@@ -25,7 +25,7 @@ import { originalPlayerData } from './original-player.ts'
 import { GRAVITY, PHYSICS_STEP } from './original-physics.ts'
 import { OriginalParticleRenderer } from './original-particle-system.ts'
 import type { OriginalSessionSimulation } from './original-session.ts'
-import { createOriginalSession, loadOriginalInstall, originalTutorialDefault, type OriginalInstall } from './original-session-loader.ts'
+import { ORIGINAL_GAME_DOCUMENTS, createOriginalSession, loadOriginalInstall, originalTutorialDefault, type OriginalInstall } from './original-session-loader.ts'
 import { loadSkyTextures } from './original-sky-box.ts'
 import { DEFAULT_STEREO_SETTINGS, LEIA_STEREO_MODE, StereoRenderer, computeStereoBufferScale, shellLeiaActive, type StereoSettings } from './stereo-renderer.ts'
 import { OriginalGamepad } from '../controls/gamepad.ts'
@@ -35,6 +35,15 @@ import { canvasBox, pointerLayout, stagePointer } from '../ui/original-art.ts'
 
 /** A camera turn's pulsed keys stay down long enough for the authored 250 ms Bezier. */
 const TURN_HOLD_MS = 300
+/** The port's level-unlock code: its length and the FNV-1a hash of its comma-joined KeyboardEvent codes. */
+const LEVEL_CHEAT_LENGTH = 4
+const LEVEL_CHEAT_HASH = 0x036a096b
+
+function fnv1a(text: string): number {
+  let hash = 0x811c9dc5
+  for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 0x01000193) >>> 0
+  return hash
+}
 let rapierReady: Promise<void> | undefined
 
 export const ORIGINAL_DIK_CODES: Readonly<Record<string, number>> = {
@@ -507,6 +516,7 @@ export class OriginalGraphHost {
   private readonly turnQueue: ('left' | 'right')[] = []
   private turnPulse?: { direction: 'left' | 'right'; started: number; frames: number }
   private pauseFrames = 0
+  private readonly levelCheatKeys: string[] = []
   private touchAxes: Axes = { x: 0, z: 0 }
   private touchView = false
   private backend: 'ivp' | 'rapier' = 'rapier'
@@ -778,6 +788,7 @@ export class OriginalGraphHost {
       binding: context => this.createBinding(context),
       simulation,
       filter: this.planarFilter,
+      prefetch: ORIGINAL_GAME_DOCUMENTS,
       play: true,
     })
     if (this.disposed) { this.dispose(); return }
@@ -1201,11 +1212,30 @@ export class OriginalGraphHost {
     const dik = originalScanCode(event.code)
     if (dik === undefined) return
     if (event.repeat) { event.preventDefault(); return }
+    this.trackLevelCheat(event.code)
     this.updateAscii(dik, event.key)
     this.physicalHeld.add(dik)
     this.keys.setSource('keyboard', this.physicalHeld)
     this.audio?.unlock()
     event.preventDefault()
+  }
+
+  /**
+   * Port addition, not in the original: a key code typed on the main menu
+   * unlocks every level in `DB_Levelfreischaltung`, the array the level list
+   * reads. Only a hash of the code is kept here.
+   */
+  private trackLevelCheat(code: string) {
+    if (!this.isMenuMainActive()) { this.levelCheatKeys.length = 0; return }
+    this.levelCheatKeys.push(code)
+    if (this.levelCheatKeys.length > LEVEL_CHEAT_LENGTH) this.levelCheatKeys.shift()
+    if (this.levelCheatKeys.length < LEVEL_CHEAT_LENGTH || fnv1a(this.levelCheatKeys.join(',')) !== LEVEL_CHEAT_HASH) return
+    this.levelCheatKeys.length = 0
+    // Every document's runtime reads its arrays through the session's Gameplay binding.
+    const rows = this.gameplayBinding?.array('DB_Levelfreischaltung')
+    if (!rows) throw new Error('The level cheat found no DB_Levelfreischaltung array')
+    for (const row of rows) row[0] = 1
+    this.playMenuSound()
   }
 
   private keyUp = (event: KeyboardEvent) => {
@@ -1347,6 +1377,14 @@ export class OriginalGraphHost {
 
   private syncParticleTextures() {
     if (!this.context) return
+    // An emitter's Texture input arrives as the texture's reference or, for an
+    // object parameter, its authored name; every same-named copy shows one file,
+    // so a name is registered only while all its textures agree.
+    const byName = new Map<string, THREE.Texture | null>()
+    const register = (name: string, map: THREE.Texture) => {
+      const seen = byName.get(name)
+      byName.set(name, seen === undefined || seen === map ? map : null)
+    }
     for (const texture of this.context.objectsOfClass(CKCID.TEXTURE)) {
       if (this.flameTexture && (texture.name === 'I_Particle_Flames' || texture.name === 'Particle_Flames')) {
         this.particleTextures.set(originalObjectReference(texture.id), this.flameTexture)
@@ -1355,7 +1393,13 @@ export class OriginalGraphHost {
       const pack = texture.document === undefined ? undefined : this.packs?.get(texture.document.toLowerCase())
       const entry = pack?.textures.find(item => item.name === texture.name)
       const file = entry?.file ? this.loadedTextures.get(entry.file) : undefined
-      if (file) this.particleTextures.set(originalObjectReference(texture.id), file)
+      if (!file) continue
+      this.particleTextures.set(originalObjectReference(texture.id), file)
+      register(texture.name, file)
+    }
+    for (const [name, map] of byName) {
+      if (map) this.particleTextures.set(name, map)
+      else this.particleTextures.delete(name)
     }
   }
 
